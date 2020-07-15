@@ -1,0 +1,41 @@
+{
+  "name": "game-example",
+  "version": "1.1.0",
+  "description": "Canvas Game Example",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && npm run eslint",
+    "eslint": "eslint src/**/*.ts{,x}",
+    "postinstall": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^22.1.3",
+    "@types/node": "^10.17.26",
+    "@typescript-eslint/eslint-plugin": "^3.3.0",
+    "@typescript-eslint/parser": "^3.3.0",
+    "chai": "^4.1.2",
+    "eslint": "^7.3.0",
+    "husky": "3.0.0",
+    "jest": "^22.0.4",
+    "jest-cli": "^24.0.0",
+    "prettier": "^2.0.5",
+    "pretty-quick": "^2.0.1",
+    "ts-jest": "^22.0.4",
+    "ts-node": "^5.0.0",
+    "typescript": "^3.9.2"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run eslint"
+    }
+  },
+  "author": "JibJib",
+  "license": "ISC"
+}

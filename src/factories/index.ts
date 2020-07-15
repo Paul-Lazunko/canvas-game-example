@@ -1,0 +1,5 @@
+export * from './InputFactory'
+export * from './ShotFactory'
+export * from './RandomStaticItemFactory'
+export * from './RandomWeaponFactory'
+export * from './EnemyFactory'

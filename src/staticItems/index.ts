@@ -1,0 +1,6 @@
+export * from './AmmoCannonStaticItem'
+export * from './AmmoMachineGunStaticItem'
+export * from './AmmoFlamethrowerStaticItem'
+export * from './AmmoLaserStaticItem'
+export * from './AmmoRocketLauncherrStaticItem'
+export * from './HealthStaticItem'
