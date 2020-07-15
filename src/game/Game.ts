@@ -102,6 +102,7 @@ export class Game {
     };
     this.gameTime = Date.now();
     this.isRun = true;
+    this.addPlayer();
     return this;
   }
 
@@ -126,7 +127,6 @@ export class Game {
     });
     player.health = 1000;
     this.dynamicItems.unshift(player);
-    return this;
   }
 
   public start () {
