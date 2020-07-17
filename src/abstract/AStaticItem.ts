@@ -4,12 +4,12 @@ export abstract class AStaticItem {
 
   public type: string;
   public value: number;
+  public defaultValue: number;
 
   public position: IPosition;
   public size: ISize;
 
-  constructor(options: IStaticItemOptions) {
-    this.value = options.value;
+  protected constructor(options: IStaticItemOptions) {
     this.position = options.position;
   }
 

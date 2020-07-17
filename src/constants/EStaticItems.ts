@@ -1,5 +1,7 @@
 export enum EStaticItems {
   HEALTH = 'health',
+  LIFE = 'life',
+  MINE = 'mine',
   AMMO_MACHINE_GUN = 'machineGun',
   AMMO_CANNON = 'cannon',
   AMMO_FLAMETHROWER = 'flamethrower',

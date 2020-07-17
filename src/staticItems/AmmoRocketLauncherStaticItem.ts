@@ -1,8 +1,14 @@
 import { AStaticItem } from '../abstract';
-import { EStaticItems, EWeapon } from '../constants';
-import { ISize, IStaticItemOptions } from '../interfaces';
+import { IStaticItemOptions } from '../interfaces';
+import {
+  EStaticItems,
+  WEAPON__ROCKET_LAUNCHER_AMMO_COLOR_FIRST,
+  WEAPON__ROCKET_LAUNCHER_AMMO_COLOR_SECOND
+} from '../constants';
 
-export class AmmoRocketLauncherrStaticItem extends AStaticItem {
+export class AmmoRocketLauncherStaticItem extends AStaticItem {
+
+  public value: number = 5;
 
   constructor(options: IStaticItemOptions) {
     super(options);
@@ -14,9 +20,9 @@ export class AmmoRocketLauncherrStaticItem extends AStaticItem {
   }
 
   public render(ctx: any) {
-    ctx.fillStyle = '#4e525a';
+    ctx.fillStyle = WEAPON__ROCKET_LAUNCHER_AMMO_COLOR_FIRST;
     ctx.fillRect(this.position.x, this.position.y, 9,9)
-    ctx.fillStyle = '#9cc0c5';
+    ctx.fillStyle = WEAPON__ROCKET_LAUNCHER_AMMO_COLOR_SECOND;
     ctx.fillRect(this.position.x + 3, this.position.y + 3, 3,3)
     ctx.fillRect(this.position.x + 3, this.position.y + 6, 3,3)
     ctx.fillRect(this.position.x, this.position.y + 6, 9,3)

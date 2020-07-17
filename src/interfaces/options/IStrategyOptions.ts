@@ -1,5 +1,5 @@
-import { ADynamicItem, AStaticItem } from '../abstract';
-import { Input, Shot } from '../core';
+import { ADynamicItem, AStaticItem } from '../../abstract';
+import { Input, Shot } from '../../core';
 
 export interface IStrategyOptions {
   context: ADynamicItem,

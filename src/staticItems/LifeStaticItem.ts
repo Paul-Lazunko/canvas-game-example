@@ -1,29 +1,28 @@
 import { AStaticItem } from '../abstract';
-import { EStaticItems, EWeapon, HEALTH_STATIC_ITEM_COLOR_FIRST, HEALTH_STATIC_ITEM_COLOR_SECOND } from '../constants';
 import { ISize, IStaticItemOptions } from '../interfaces';
+import {
+  EStaticItems,
+  LIFE_STATIC_ITEM_COLOR_FIRST,
+  LIFE_STATIC_ITEM_COLOR_SECOND
+} from '../constants';
 
-export class HealthStaticItem extends AStaticItem {
+export class LifeStaticItem extends AStaticItem {
 
-  public value: number = 25;
+  public value: number = 100;
 
   constructor(options: IStaticItemOptions) {
     super(options);
-    this.type =  EStaticItems.HEALTH;
+    this.type =  EStaticItems.LIFE;
     this.size = {
       width: 9,
       height: 9
     };
   }
 
-  public size: ISize = {
-    width: 9,
-    height: 9
-  };
-
   public render(ctx: any) {
-    ctx.fillStyle = HEALTH_STATIC_ITEM_COLOR_FIRST;
+    ctx.fillStyle = LIFE_STATIC_ITEM_COLOR_FIRST;
     ctx.fillRect(this.position.x, this.position.y, 9,9)
-    ctx.fillStyle = HEALTH_STATIC_ITEM_COLOR_SECOND;
+    ctx.fillStyle = LIFE_STATIC_ITEM_COLOR_SECOND;
     ctx.fillRect(this.position.x + 3, this.position.y, 3,3)
     ctx.fillRect(this.position.x, this.position.y + 3, 3,3)
     ctx.fillRect(this.position.x + 3, this.position.y + 3, 3,3)

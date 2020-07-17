@@ -3,9 +3,9 @@ import { EOrientation } from '../constants';
 import { IInputOptions, IPosition } from '../interfaces';
 
 export class Input {
-  position: Partial<IPosition>;
-  target: ADynamicItem;
-  orientation: EOrientation;
+  public position: Partial<IPosition>;
+  public target: ADynamicItem;
+  public orientation: EOrientation;
 
   constructor(options: IInputOptions) {
     const { position, target } = options;

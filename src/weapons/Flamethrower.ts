@@ -1,6 +1,6 @@
 import { ADynamicItem, AWeapon } from '../abstract';
-import { EWeapon } from '../constants';
-import { IPosition, IRenderShotOptions, ISize } from '../interfaces';
+import { EWeapon, WEAPON_FLAMETHROWER_FLASH_COLOR, WEAPON_FLAMETHROWER_SHOT_COLOR } from '../constants';
+import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 
 export class Flamethrower extends AWeapon {
 
@@ -11,29 +11,29 @@ export class Flamethrower extends AWeapon {
     width: 25,
     height: 25
   };
-  public speed: number = 100;
+  public speed: number = 200;
   public fireRate: number = 1;
-  public reload: number = 500;
-  public color: string = '#111';
-  public shotColor: string = '#ff0c07';
-  public flashColor: string = '#ff6000';
+  public reload: number = 1000;
+  public shotColor: string = WEAPON_FLAMETHROWER_SHOT_COLOR;
+  public flashColor: string = WEAPON_FLAMETHROWER_FLASH_COLOR;
   public ammoCount: number = 10;
 
-  public renderShotStart = (options: IRenderShotOptions) => {
+  public renderShotMotion = (options: IRenderShotParams) => {
     const { ctx, position, dx, dy } = options;
     const kx: number = dx === 0 ? 0 : dx > 0 ? 1 : -1;
     const ky: number = dy === 0 ? 0 : dy > 0 ? 1 : -1;
     ctx.fillStyle = '#ffe700';
     ctx.fillRect(position.x + 8*kx, position.y + 8*ky, 9,9);
-    ctx.fillRect(position.x + 10*kx, position.y + 10*ky, 9,9);
+    ctx.fillRect(position.x + 10*kx, position.y + 10*ky, 7,7);
     ctx.fillStyle = '#ff6000';
-    ctx.fillRect(position.x - 4*kx, position.y - 4*ky, 9,9);
-    ctx.fillRect(position.x + 4*kx, position.y + 4*ky, 9,9);
+    ctx.fillRect(position.x + 4*kx, position.y + 4*ky, 7,7);
+    ctx.fillRect(position.x + 6*kx, position.y + 6*ky, 9,9);
     ctx.fillStyle = this.shotColor;
-    ctx.fillRect(position.x, position.y, 9,9);
+    ctx.fillRect(position.x, position.y, 3,3);
+    ctx.fillRect(position.x + 2 * kx, position.y + 2 * ky, 5,5);
   };
 
-  public renderShotEnd = (ctx: any, position: IPosition) => {
+  public renderShotMotionEnd = (ctx: any, position: IPosition) => {
     ctx.fillStyle = '#ffef00';
     ctx.fillRect(position.x - 12, position.y - 12, 25,25);
     ctx.fillStyle = '#ffd919';

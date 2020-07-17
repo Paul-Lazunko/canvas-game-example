@@ -1,5 +1,5 @@
 import { ADynamicItem } from '../abstract';
-import { Input } from '../core/Input';
+import { Input } from '../core';
 import { IPosition } from '../interfaces';
 
 export class InputFactory {

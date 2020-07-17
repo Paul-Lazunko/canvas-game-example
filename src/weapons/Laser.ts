@@ -1,11 +1,11 @@
 import { ADynamicItem, AWeapon } from '../abstract';
-import { EWeapon } from '../constants';
-import { IPosition, IRenderShotOptions, ISize } from '../interfaces';
+import { EWeapon, WEAPON_LASER_FLASH_COLOR, WEAPON_LASER_SHOT_COLOR } from '../constants';
+import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 
 export class Laser extends AWeapon {
 
   public name: string = 'laser';
-  public distance: number = 1000;
+  public distance: number = 600;
   public damage: number = 100;
   public damageSize: ISize = {
     width: 5,
@@ -13,25 +13,23 @@ export class Laser extends AWeapon {
   };
   public speed: number = 1000;
   public fireRate: number = 1;
-  public reload: number = 5000;
-  public color: string = '#111';
-  public shotColor: string = '#b3e0ff';
-  public flashColor: string = '#ffef00';
+  public reload: number = 2000;
+  public shotColor: string = WEAPON_LASER_SHOT_COLOR;
+  public flashColor: string = WEAPON_LASER_FLASH_COLOR;
   public ammoCount: number = 5;
 
-  public renderShotStart = (options: IRenderShotOptions) => {
-    const { ctx, position, endPosition, dx, dy } = options;
-    console.log({  position, endPosition});
+  public renderShotMotion = (options: IRenderShotParams) => {
+    const { ctx, position, endPosition, startPosition } = options;
     ctx.strokeStyle = this.shotColor;
     ctx.strokeWidth = '3px';
     ctx.beginPath();
     ctx.moveTo(endPosition.x, endPosition.y);
-    ctx.lineTo(position.x, position.y);
+    ctx.lineTo(startPosition.x, startPosition.y);
     ctx.stroke();
     ctx.closePath();
   };
 
-  public renderShotEnd = (ctx: any, position: IPosition) => {
+  public renderShotMotionEnd = (ctx: any, position: IPosition) => {
     ctx.fillStyle = this.flashColor;
     ctx.fillRect(position.x - 4, position.y - 4, 9,9);
   }

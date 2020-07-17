@@ -1,7 +1,7 @@
 import { ADynamicItem, AWeapon } from '../abstract';
-import { IPosition, IRenderShotOptions, IShotOptions } from '../interfaces';
+import { IPosition, IRenderShot, IRenderShotParams, IShotOptions } from '../interfaces';
 
-export class Shot {
+export class Shot implements IRenderShot{
 
   public shooter: ADynamicItem;
 
@@ -13,10 +13,7 @@ export class Shot {
   public speed: number;
   public distance: number;
 
-  isHit: boolean;
-
-  public renderStart: (options: IRenderShotOptions) => void;
-  public renderEnd: (ctx: any, position: IPosition) => void;
+  public isHit: boolean;
 
   constructor(options: IShotOptions) {
     const {
@@ -27,8 +24,8 @@ export class Shot {
       damage,
       distance,
       speed,
-      renderEnd,
-      renderStart
+      renderShotMotion,
+      renderShotMotionEnd
     } = options;
     this.shooter = shooter;
     this.startPosition = Object.assign({}, startPosition);
@@ -37,9 +34,14 @@ export class Shot {
     this.damage = damage;
     this.distance = distance;
     this.speed = speed;
-    this.renderStart = renderStart.bind(weapon);
-    this.renderEnd = renderEnd.bind(weapon);
+    this.renderShotMotion = renderShotMotion.bind(weapon);
+    this.renderShotMotionEnd = renderShotMotionEnd.bind(weapon);
     this.isHit = false;
   }
 
+  renderShotMotion(options: IRenderShotParams): void {
+  }
+
+  renderShotMotionEnd(ctx: any, position: IPosition): void {
+  }
 }

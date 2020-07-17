@@ -1,8 +1,18 @@
 import { ADynamicItem, AStaticItem, AWeapon } from '../abstract';
-import { EOrientation, EStaticItems, GAME_DEFAULT_RATE_LIMIT } from '../constants';
+import {
+  EOrientation,
+  EStaticItems, GAME_AREA_DEFAULT_COLOR,
+  GAME_DEFAULT_DYNAMIC_ITEMS_ADD_THRESHOLD_MS,
+  GAME_DEFAULT_DYNAMIC_ITEMS_MAX_COUNT,
+  GAME_DEFAULT_PLAYER_HEALTH_VALUE,
+  GAME_DEFAULT_POSITION_THRESHOLD,
+  GAME_DEFAULT_RATE_LIMIT,
+  GAME_DEFAULT_STATIC_ITEMS_ADD_THRESHOLD_MS,
+  GAME_DEFAULT_STATIC_ITEMS_MAX_COUNT
+} from '../constants';
 import { Shot } from '../core';
 import { Tank } from '../dynamicItems';
-import { EnemyFactory, InputFactory, RandomStaticItemFactory, ShotFactory } from '../factories';
+import { EnemyFactory, InputFactory, PositionFactory, RandomStaticItemFactory, ShotFactory } from '../factories';
 import { IGameOptions, IPosition, ISize } from '../interfaces';
 import { Strategy } from '../strategy';
 import { Cannon, Flamethrower, Laser, MachineGun, RocketLauncher } from '../weapons';
@@ -20,17 +30,19 @@ export class Game {
   protected isRun: boolean;
 
   protected mousePosition: IPosition = {
-    x: 20,
-    y: 20
+    x: 0,
+    y: 0
   };
 
-  protected addStaticItemLimit: number = 4000;
+  protected addStaticItemThresholdMs: number ;
   protected addStaticItemValueHolder: number = 0;
-  protected addEnemyLimit: number = 10000;
+  protected addEnemyThresholdMs: number;
   protected addEnemyValueHolder: number = 0;
 
-  protected maxStaticItemsCount: number = 20;
-  protected maxDynamicItemsCount: number = 5;
+  protected staticItemsMaxCount: number;
+  protected dynamicItemsMaxCount: number;
+
+  protected playerHealth: number;
 
   protected dynamicItems: ADynamicItem[];
   protected staticItems: AStaticItem[];
@@ -38,9 +50,22 @@ export class Game {
   public shots: Shot[];
   protected deaths: ADynamicItem[];
 
-  constructor() {
+  constructor(options: IGameOptions) {
+    const {
+      fps,
+      addEnemyThresholdMs,
+      addStaticItemThresholdMs,
+      dynamicItemsMaxCount,
+      staticItemsMaxCount,
+      playerHealth
+    } = options;
     this.score = 0;
-    this.rateLimit = GAME_DEFAULT_RATE_LIMIT;
+    this.rateLimit = fps ? Math.round(1000/fps) : GAME_DEFAULT_RATE_LIMIT;
+    this.addEnemyThresholdMs = addEnemyThresholdMs || GAME_DEFAULT_DYNAMIC_ITEMS_ADD_THRESHOLD_MS;
+    this.addStaticItemThresholdMs = addStaticItemThresholdMs || GAME_DEFAULT_STATIC_ITEMS_ADD_THRESHOLD_MS;
+    this.dynamicItemsMaxCount = dynamicItemsMaxCount || GAME_DEFAULT_DYNAMIC_ITEMS_MAX_COUNT;
+    this.staticItemsMaxCount = staticItemsMaxCount || GAME_DEFAULT_STATIC_ITEMS_MAX_COUNT;
+    this.playerHealth = playerHealth || GAME_DEFAULT_PLAYER_HEALTH_VALUE;
     this.startTime = Date.now();
     this.dynamicItems = [];
     this.staticItems = [];
@@ -53,7 +78,6 @@ export class Game {
     }
   }
 
-
   public get player() {
     return this.dynamicItems[0];
   }
@@ -64,40 +88,49 @@ export class Game {
     this.area.width = canvas.width;
     this.area.height = canvas.height;
     canvas.onmousemove = function (e: any) {
-      const { offsetX, offsetY } = e;
-      self.mousePosition = {
-        x: offsetX,
-        y: offsetY
-      };
+      if ( self.isRun ) {
+        e.preventDefault()
+        const { offsetX, offsetY } = e;
+        self.mousePosition = {
+          x: offsetX,
+          y: offsetY
+        };
+      }
     };
     ShotFactory.init(self.shots);
     InputFactory.init(self.inputs);
     window.onmousedown = function (e: any) {
-      ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], self.mousePosition);
+      if ( self.isRun ) {
+        e.preventDefault()
+        ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], self.mousePosition);
+      }
     };
     window.onkeypress = function(e: any) {
-      switch(e.key) {
-        case 'w':
-          InputFactory.input(self.dynamicItems[0], { y: -1 });
-          break;
-        case 's':
-          InputFactory.input(self.dynamicItems[0], { y: 1 });
-          break;
-        case 'd':
-          InputFactory.input(self.dynamicItems[0], { x: 1 });
-          break;
-        case 'a':
-          InputFactory.input(self.dynamicItems[0], { x: -1 });
-          break;
-        case 'q':
-          self.dynamicItems[0].weapons.push(self.dynamicItems[0].weapons.shift());
-          break;
-        case 't':
-          self.dynamicItems[0].position = {
-            x: self.mousePosition.x,
-            y: self.mousePosition.y,
-          };
-          break;
+      if ( self.isRun ) {
+        e.preventDefault()
+        switch(e.key) {
+          case 'w':
+            InputFactory.input(self.dynamicItems[0], { y: -1 });
+            break;
+          case 's':
+            InputFactory.input(self.dynamicItems[0], { y: 1 });
+            break;
+          case 'd':
+            InputFactory.input(self.dynamicItems[0], { x: 1 });
+            break;
+          case 'a':
+            InputFactory.input(self.dynamicItems[0], { x: -1 });
+            break;
+          case 'q':
+            self.dynamicItems[0].weapons.push(self.dynamicItems[0].weapons.shift());
+            break;
+          case 't':
+            self.dynamicItems[0].position = {
+              x: self.mousePosition.x,
+              y: self.mousePosition.y,
+            };
+            break;
+        }
       }
     };
     this.gameTime = Date.now();
@@ -112,20 +145,22 @@ export class Game {
     const flamethrower: Flamethrower = new Flamethrower();
     const laser: Laser = new Laser();
     const rocketLauncher = new RocketLauncher();
+    const position: IPosition = PositionFactory.getPosition(
+      this.area.width,
+      this.area.height,
+      GAME_DEFAULT_POSITION_THRESHOLD
+    );
     const player: Tank = new Tank({
+      position,
       weapons: [
         machineGun,
         cannon,
         flamethrower,
         rocketLauncher,
         laser
-      ],
-      position: {
-        x: Math.round(Math.random() * (this.area.width - 20)),
-        y: Math.round(Math.random() * (this.area.height - 20)),
-      }
+      ]
     });
-    player.health = 1000;
+    player.health = this.playerHealth;
     this.dynamicItems.unshift(player);
   }
 
@@ -146,7 +181,7 @@ export class Game {
     this.dynamicItems = [];
     this.staticItems = [];
     this.ctx.clearRect(0,0,this.area.width,this.area.height);
-    alert('Game over');
+    alert(`Game over: You have killed ${this.score} enem${this.score !== 1 ? 'ies' : 'y' }`);
   }
 
   public update(dt: number) {
@@ -160,21 +195,17 @@ export class Game {
 
   protected addStaticItems(dt: number) {
     this.addStaticItemValueHolder += dt;
-    if ( this.addStaticItemValueHolder >= this.addStaticItemLimit && this.staticItems.length < this.maxStaticItemsCount ) {
-      const value: number = Math.round(Math.random() * 20);
-      const position: IPosition = {
-        x: Math.round(Math.random() * (this.area.width - 20)),
-        y: Math.round(Math.random() * (this.area.height - 20)),
-      };
-      if ( position.x >= this.area.width ) {
-        position.x = this.area.width - 20
-      }
-      if ( position.y >= this.area.height ) {
-        position.y = this.area.height - 20
-      }
+    if (
+      this.addStaticItemValueHolder >= this.addStaticItemThresholdMs
+      && this.staticItems.length < this.staticItemsMaxCount
+    ) {
+      const position: IPosition = PositionFactory.getPosition(
+        this.area.width,
+        this.area.height,
+        GAME_DEFAULT_POSITION_THRESHOLD
+      );
       const item: AStaticItem = RandomStaticItemFactory.getRandomStaticItem({
-        position,
-        value
+        position
       });
       this.staticItems.push(item);
       this.addStaticItemValueHolder = 0;
@@ -183,11 +214,12 @@ export class Game {
 
   protected addEnemy(dt: number) {
     this.addEnemyValueHolder += dt;
-    if ( this.addEnemyValueHolder >= this.addEnemyLimit && this.dynamicItems.length <= this.maxDynamicItemsCount) {
-      const position: IPosition = {
-        x: Math.round(Math.random() * (this.area.width - 20)),
-        y: Math.round(Math.random() * (this.area.height - 20)),
-      };
+    if ( this.addEnemyValueHolder >= this.addEnemyThresholdMs && this.dynamicItems.length <= this.dynamicItemsMaxCount) {
+      const position: IPosition = PositionFactory.getPosition(
+        this.area.width,
+        this.area.height,
+        GAME_DEFAULT_POSITION_THRESHOLD
+      );
       const item: ADynamicItem = EnemyFactory.addEnemy(position);
       item.strategy = new Strategy({
         context: item,
@@ -210,11 +242,11 @@ export class Game {
       if ( target ) {
         const newPositionX: number = target.position.x + Math.round(position.x * target.speed );
         const newPositionY: number =target.position.y + Math.round(position.y * target.speed );
-        if ( position.x && newPositionX > 0 && newPositionX <= this.area.width ) {
+        if ( position.x && ( newPositionX > 0 ) && newPositionX <= this.area.width- GAME_DEFAULT_POSITION_THRESHOLD ) {
           target.position.x = target.position.x + Math.round(position.x * target.speed );
           target.orientation = EOrientation.HORIZONTAL
         }
-        if ( position.y && newPositionY > 0 && newPositionY <= this.area.height  ) {
+        if ( position.y && ( newPositionY > 0 ) && newPositionY <= this.area.height - GAME_DEFAULT_POSITION_THRESHOLD ) {
           target.position.y = target.position.y + Math.round(position.y * target.speed );
           target.orientation = EOrientation.VERTICAL
         }
@@ -223,14 +255,12 @@ export class Game {
   }
 
   protected handleItems(dt: number) {
-    this.dynamicItems.forEach((item: ADynamicItem) => {
-      if ( item ) {
-        this.handleDynamicStaticItemsInteraction(item)
-      }
-    });
-    this.handlePlayerDynamicItemsInteraction(dt);
     this.dynamicItems.forEach((item: ADynamicItem, itemIndex: number, items: ADynamicItem[]) => {
-      if ( item && item.health <= 0 ) {
+      if ( !itemIndex ) {
+        this.handlePlayerDynamicItemsInteraction(dt, item);
+      }
+      this.handleDynamicStaticItemsInteraction(item);
+      if ( item.health <= 0 ) {
         this.deaths.push(item);
         items.splice(itemIndex, 1);
         if ( !itemIndex ) {
@@ -244,27 +274,25 @@ export class Game {
     });
   }
 
-  protected handlePlayerDynamicItemsInteraction(dt: number) {
-    const { player } = this;
+  protected handlePlayerDynamicItemsInteraction(dt: number, player: ADynamicItem) {
     this.dynamicItems
       .filter((item: ADynamicItem, index: number) => Boolean(index))
-      .forEach((item: ADynamicItem, index: number, items: ADynamicItem[]) => {
-        if ( item ) {
-          const dx = Math.abs(player.position.x + player.size.width/2 - item.position.x - item.size.width/2);
-          const dy = Math.abs(player.position.y + player.size.height/2 - item.position.y - item.size.height/2);
-          const width: number = player.size.width/2 + item.size.width/2;
-          const height: number = player.size.height/2 + item.size.height/2;
-          if ( dx <= width && dy <= height ) {
-            player.health -= 100;
-            item.health -= 100;
-          } else {
-            item.strategy.apply(dt);
-          }
+      .forEach((item: ADynamicItem) => {
+        const dx = Math.abs(player.position.x + player.size.width/2 - item.position.x - item.size.width/2);
+        const dy = Math.abs(player.position.y + player.size.height/2 - item.position.y - item.size.height/2);
+        const width: number = player.size.width/2 + item.size.width/2;
+        const height: number = player.size.height/2 + item.size.height/2;
+        if ( dx <= width && dy <= height ) {
+          player.health -= 100;
+          item.health -= 100;
+        } else {
+          item.strategy.apply(dt);
         }
       })
   }
 
   protected handleDynamicStaticItemsInteraction(target: ADynamicItem) {
+    const self = this;
     const { x, y } = target.position;
     const { width, height } = target.size;
     this.staticItems.forEach((item: AStaticItem, index: number) => {
@@ -277,6 +305,15 @@ export class Game {
           switch (item.type) {
             case EStaticItems.HEALTH:
               target.health += item.value;
+              break;
+            case EStaticItems.LIFE:
+              target.health += item.value;
+              break;
+            case EStaticItems.MINE:
+              target.health = target.health  - item.value;
+              setTimeout(() => {
+                self.renderFlash(item.position);
+              }, Math.round(self.rateLimit * 1.5))
               break;
             default:
               target.weapons
@@ -317,6 +354,8 @@ export class Game {
 
   protected render() {
     this.ctx.clearRect(0,0,this.area.width,this.area.height);
+    this.ctx.fillStyle = GAME_AREA_DEFAULT_COLOR;
+    this.ctx.fillRect(0,0, this.area.width, this.area.height);
     this.renderStaticItems();
     this.renderDynamicItems();
     this.renderShots();
@@ -325,64 +364,68 @@ export class Game {
 
   protected renderDynamicItems() {
     const self = this;
-    if ( self.ctx ) {
-      this.dynamicItems.forEach((item: ADynamicItem, index: number) => {
-        if ( item ) {
-          item.render(self.ctx);
-          if (item.weapons.length ) {
-            if ( index ) {
-              item.weapons[0].render(self.ctx, item, self.dynamicItems[0].position)
-            } else {
-              item.weapons[0].render(self.ctx, item, self.mousePosition)
-            }
+    this.dynamicItems.forEach((item: ADynamicItem, index: number) => {
+      if ( item ) {
+        item.render(self.ctx);
+        if (item.weapons.length ) {
+          if ( index ) {
+            item.weapons[0].render(self.ctx, item, self.dynamicItems[0].position)
+          } else {
+            item.weapons[0].render(self.ctx, item, self.mousePosition)
           }
         }
-      })
-    }
+      }
+    })
+  }
+
+  protected renderFlash(position: IPosition) {
+    this.ctx.fillStyle ='#dd0';
+    this.ctx.fillRect(
+      position.x -20,
+      position.y -20,
+      41,
+      41
+    );
   }
 
   protected renderDeaths() {
     while(this.deaths.length) {
       const item: ADynamicItem = this.deaths.shift();
       this.ctx.fillStyle ='#dd0';
-      this.ctx.fillRect(item.position.x -20, item.position.y -20, item.size.width + 40, item.size.height + 40);
+      this.ctx.fillRect(
+        item.position.x -20,
+        item.position.y -20,
+        item.size.width + 40,
+        item.size.height + 40
+      );
     }
   }
 
   protected renderStaticItems() {
     const self = this;
-    if ( self.ctx ) {
-      this.staticItems.forEach((item: AStaticItem, index: number) => {
-        if ( item ) {
-          item.render(self.ctx);
-        }
-      })
-    }
+    this.staticItems.forEach((item: AStaticItem) => item.render(self.ctx))
   }
 
   protected renderShots() {
     const self = this;
-    if ( self.ctx ) {
-      this.shots.forEach((shot: Shot, shotIndex: number, shots: Shot[]) => {
-        if ( shot ) {
-          const { distance, dynamicPosition, endPosition, startPosition } = shot;
-          const dx: number = dynamicPosition.x - startPosition.x;
-          const dy: number = dynamicPosition.y - startPosition.y;
-          const length: number = Math.sqrt(dx**2 + dy**2);
-          if (shot.isHit || length >= distance ) {
-            shot.renderEnd(self.ctx, shot.dynamicPosition);
-            shots.splice(shotIndex, 1);
-          } else {
-            shot.renderStart({
-              ctx: self.ctx,
-              dx,
-              dy,
-              position: dynamicPosition,
-              endPosition: endPosition
-            });
-          }
-        }
-      })
-    }
+    this.shots.forEach((shot: Shot, shotIndex: number, shots: Shot[]) => {
+      const { distance, dynamicPosition, endPosition, startPosition } = shot;
+      const dx: number = dynamicPosition.x - startPosition.x;
+      const dy: number = dynamicPosition.y - startPosition.y;
+      const length: number = Math.sqrt(dx**2 + dy**2);
+      if (shot.isHit || length >= distance ) {
+        shot.renderShotMotionEnd(self.ctx, shot.dynamicPosition);
+        shots.splice(shotIndex, 1);
+      } else {
+        shot.renderShotMotion({
+          dx,
+          dy,
+          startPosition,
+          ctx: self.ctx,
+          position: dynamicPosition,
+          endPosition: endPosition
+        });
+      }
+    })
   }
 }

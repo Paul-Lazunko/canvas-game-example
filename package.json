@@ -1,13 +1,12 @@
 {
-  "name": "game-example",
+  "name": "canvas-tank-game-example",
   "version": "1.1.0",
-  "description": "Canvas Game Example",
+  "description": "Canvas Tank Game Example",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc && npm run eslint",
     "eslint": "eslint src/**/*.ts{,x}",
-    "postinstall": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

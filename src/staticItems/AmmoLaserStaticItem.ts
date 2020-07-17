@@ -1,8 +1,13 @@
 import { AStaticItem } from '../abstract';
-import { EStaticItems, EWeapon } from '../constants';
-import { ISize, IStaticItemOptions } from '../interfaces';
+import { IStaticItemOptions } from '../interfaces';
+import {
+  EStaticItems,
+  WEAPON_LASER_AMMO_COLOR_FIRST
+} from '../constants';
 
 export class AmmoLaserStaticItem extends AStaticItem {
+
+  public value: number = 1;
 
   constructor(options: IStaticItemOptions) {
     super(options);
@@ -14,7 +19,7 @@ export class AmmoLaserStaticItem extends AStaticItem {
   }
 
   public render(ctx: any) {
-    ctx.fillStyle = '#87ade1';
+    ctx.fillStyle = WEAPON_LASER_AMMO_COLOR_FIRST;
     ctx.fillRect(this.position.x, this.position.y, 9,9)
   }
 

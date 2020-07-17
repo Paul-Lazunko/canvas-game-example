@@ -1,5 +1,10 @@
+import { TANK_COLOR_THIRD } from '../constants';
 import { ADynamicItem } from './ADynamicItem';
-import { IPosition, IRenderShotOptions, ISize } from '../interfaces';
+import {
+  IPosition,
+  IRenderShotParams,
+  ISize
+} from '../interfaces';
 
 export abstract class AWeapon {
   public name: string;
@@ -10,7 +15,7 @@ export abstract class AWeapon {
   public reload: number;
   public distance: number;
   public isActive: boolean = true;
-  public color: string = '#111';
+  public color: string = TANK_COLOR_THIRD;
   public ammoCount: number;
   public position: IPosition;
 
@@ -45,7 +50,7 @@ export abstract class AWeapon {
     }
   }
 
-  abstract renderShotStart: (options: IRenderShotOptions) => void;
-  abstract renderShotEnd: (ctx: any, position: IPosition) => void;
+  abstract renderShotMotion: (options: IRenderShotParams) => void;
+  abstract renderShotMotionEnd: (ctx: any, position: IPosition) => void;
 
 }

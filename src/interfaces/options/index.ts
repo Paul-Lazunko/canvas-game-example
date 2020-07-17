@@ -1,0 +1,6 @@
+export * from './IShotOptions'
+export * from './IInputOptions'
+export * from './IGameOptions'
+export * from './IDynamicItemOptions'
+export * from './IStaticItemOptions'
+export * from './IStrategyOptions'

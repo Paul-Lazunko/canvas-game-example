@@ -4,11 +4,13 @@ import {
 import { IStaticItemOptions } from '../interfaces';
 import {
   HealthStaticItem,
+  LifeStaticItem,
+  MineStaticItem,
   AmmoCannonStaticItem,
   AmmoMachineGunStaticItem,
   AmmoFlamethrowerStaticItem,
   AmmoLaserStaticItem,
-  AmmoRocketLauncherrStaticItem
+  AmmoRocketLauncherStaticItem
 } from '../staticItems'
 
 const items: string[] = Object.values(EStaticItems);
@@ -20,11 +22,17 @@ export class RandomStaticItemFactory {
       case EStaticItems.HEALTH:
         return new HealthStaticItem(options);
         break;
+      case EStaticItems.LIFE:
+        return new LifeStaticItem(options);
+        break;
+      case EStaticItems.MINE:
+        return new MineStaticItem(options);
+        break;
       case EStaticItems.AMMO_FLAMETHROWER:
         return new AmmoFlamethrowerStaticItem(options);
         break;
       case EStaticItems.AMMO_CANNON:
-        return new AmmoCannonStaticItem(options)
+        return new AmmoCannonStaticItem(options);
         break;
       case EStaticItems.AMMO_MACHINE_GUN:
         return new AmmoMachineGunStaticItem(options);
@@ -33,7 +41,7 @@ export class RandomStaticItemFactory {
         return new AmmoLaserStaticItem(options);
         break;
         case EStaticItems.AMMO_ROCKET_LAUNCHER:
-        return new AmmoRocketLauncherrStaticItem(options);
+        return new AmmoRocketLauncherStaticItem(options);
         break;
     }
   }

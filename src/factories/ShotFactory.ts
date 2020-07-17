@@ -1,9 +1,8 @@
 import { ADynamicItem } from '../abstract';
 import { AWeapon } from '../abstract';
 import { GAME_DEFAULT_RATE_LIMIT } from '../constants';
-import { Input } from '../core/Input';
 import { IPosition } from '../interfaces';
-import { Shot } from '../core/Shot';
+import { Shot } from '../core';
 
 export class ShotFactory {
   static shots: Shot[];
@@ -29,20 +28,20 @@ export class ShotFactory {
                 damage: weapon.damage,
                 distance: weapon.distance,
                 speed: weapon.speed,
-                renderEnd: weapon.renderShotEnd,
-                renderStart: weapon.renderShotStart
+                renderShotMotion: weapon.renderShotMotion,
+                renderShotMotionEnd: weapon.renderShotMotionEnd
               }));
+            weapon.ammoCount = weapon.ammoCount - 1;
+            if ( i=== weapon.fireRate -1 ) {
+              weapon.isActive = false;
+            }
           }, i*GAME_DEFAULT_RATE_LIMIT );
-          weapon.ammoCount = weapon.ammoCount - 1;
-          weapon.isActive = false;
         }
       } else {
         setTimeout(() => {
           weapon.isActive = true;
         }, Math.round(weapon.reload))
       }
-
     }
-
   }
 }

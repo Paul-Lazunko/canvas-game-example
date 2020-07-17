@@ -1,1 +1,7 @@
 export const GAME_DEFAULT_RATE_LIMIT: number = 40;
+export const GAME_DEFAULT_DYNAMIC_ITEMS_MAX_COUNT: number = 10;
+export const GAME_DEFAULT_STATIC_ITEMS_MAX_COUNT: number = 20;
+export const GAME_DEFAULT_DYNAMIC_ITEMS_ADD_THRESHOLD_MS: number = 10000;
+export const GAME_DEFAULT_STATIC_ITEMS_ADD_THRESHOLD_MS: number = 2000;
+export const GAME_DEFAULT_PLAYER_HEALTH_VALUE: number = 500;
+export const GAME_DEFAULT_POSITION_THRESHOLD: number = 7;
