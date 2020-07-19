@@ -8,7 +8,7 @@ import {
   GAME_DEFAULT_POSITION_THRESHOLD,
   GAME_DEFAULT_RATE_LIMIT,
   GAME_DEFAULT_STATIC_ITEMS_ADD_THRESHOLD_MS,
-  GAME_DEFAULT_STATIC_ITEMS_MAX_COUNT
+  GAME_DEFAULT_STATIC_ITEMS_MAX_COUNT, GAME_DEFAULT_STRATEGY_REACTION_DELAY, GAME_FLASH_COLOR
 } from '../constants';
 import { Shot } from '../core';
 import { Tank } from '../dynamicItems';
@@ -27,7 +27,7 @@ export class Game {
   protected startTime: number;
   protected gameTime: number;
   protected area: ISize;
-  protected isRun: boolean;
+  public isRan: boolean;
 
   protected mousePosition: IPosition = {
     x: 0,
@@ -57,7 +57,7 @@ export class Game {
       addStaticItemThresholdMs,
       dynamicItemsMaxCount,
       staticItemsMaxCount,
-      playerHealth
+      playerHealth,
     } = options;
     this.score = 0;
     this.rateLimit = fps ? Math.round(1000/fps) : GAME_DEFAULT_RATE_LIMIT;
@@ -88,7 +88,7 @@ export class Game {
     this.area.width = canvas.width;
     this.area.height = canvas.height;
     canvas.onmousemove = function (e: any) {
-      if ( self.isRun ) {
+      if ( self.isRan ) {
         e.preventDefault()
         const { offsetX, offsetY } = e;
         self.mousePosition = {
@@ -100,13 +100,13 @@ export class Game {
     ShotFactory.init(self.shots);
     InputFactory.init(self.inputs);
     window.onmousedown = function (e: any) {
-      if ( self.isRun ) {
+      if ( self.isRan ) {
         e.preventDefault()
         ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], self.mousePosition);
       }
     };
     window.onkeypress = function(e: any) {
-      if ( self.isRun ) {
+      if ( self.isRan ) {
         e.preventDefault()
         switch(e.key) {
           case 'w':
@@ -134,8 +134,8 @@ export class Game {
       }
     };
     this.gameTime = Date.now();
-    this.isRun = true;
     this.addPlayer();
+    this.isRan = true;
     return this;
   }
 
@@ -165,32 +165,37 @@ export class Game {
   }
 
   public start () {
-    const now = Date.now();
-    const dt = now - this.gameTime;
-    if ( dt >= this.rateLimit && this.isRun ) {
-      this.gameTime += dt;
-      this.update(dt);
+    if ( this.isRan ) {
+      const now = Date.now();
+      const dt = now - this.gameTime;
+      if ( dt >= this.rateLimit ) {
+        this.gameTime += dt;
+        this.update(dt);
+      }
+      window.requestAnimationFrame(this.start.bind(this));
     }
-    window.requestAnimationFrame(this.start.bind(this));
   }
 
   public stop() {
-    this.isRun = false;
+    this.isRan = false;
     this.inputs = [];
     this.shots = [];
     this.dynamicItems = [];
     this.staticItems = [];
     this.ctx.clearRect(0,0,this.area.width,this.area.height);
-    alert(`Game over: You have killed ${this.score} enem${this.score !== 1 ? 'ies' : 'y' }`);
   }
 
   public update(dt: number) {
-    this.addStaticItems(dt);
-    this.addEnemy(dt);
-    this.handleInputs(dt);
-    this.handleItems(dt);
-    this.handleShots(dt);
-    this.render();
+    try {
+      this.addStaticItems(dt);
+      this.addEnemy(dt);
+      this.handleInputs(dt);
+      this.handleItems(dt);
+      this.handleShots(dt);
+      this.render();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   protected addStaticItems(dt: number) {
@@ -228,7 +233,8 @@ export class Game {
         inputs: this.inputs,
         staticItems: this.staticItems,
         kamikadzeMode: Boolean(Math.round(Math.random())),
-        healthLimitValue: 30
+        healthLimitValue: 30,
+        reactionDelay: GAME_DEFAULT_STRATEGY_REACTION_DELAY
       });
       this.dynamicItems.push(item);
       this.addEnemyValueHolder = 0;
@@ -242,11 +248,11 @@ export class Game {
       if ( target ) {
         const newPositionX: number = target.position.x + Math.round(position.x * target.speed );
         const newPositionY: number =target.position.y + Math.round(position.y * target.speed );
-        if ( position.x && ( newPositionX > 0 ) && newPositionX <= this.area.width- GAME_DEFAULT_POSITION_THRESHOLD ) {
+        if ( position.x && ( newPositionX > 0 ) && newPositionX <= this.area.width ) {
           target.position.x = target.position.x + Math.round(position.x * target.speed );
           target.orientation = EOrientation.HORIZONTAL
         }
-        if ( position.y && ( newPositionY > 0 ) && newPositionY <= this.area.height - GAME_DEFAULT_POSITION_THRESHOLD ) {
+        if ( position.y && ( newPositionY > 0 ) && newPositionY <= this.area.height ) {
           target.position.y = target.position.y + Math.round(position.y * target.speed );
           target.orientation = EOrientation.VERTICAL
         }
@@ -256,19 +262,21 @@ export class Game {
 
   protected handleItems(dt: number) {
     this.dynamicItems.forEach((item: ADynamicItem, itemIndex: number, items: ADynamicItem[]) => {
-      if ( !itemIndex ) {
-        this.handlePlayerDynamicItemsInteraction(dt, item);
-      }
-      this.handleDynamicStaticItemsInteraction(item);
-      if ( item.health <= 0 ) {
-        this.deaths.push(item);
-        items.splice(itemIndex, 1);
+      if ( item ) {
         if ( !itemIndex ) {
-          setTimeout(() => {
-            this.stop();
-          }, 500)
-        } else {
-          this.score = this.score + 1;
+          this.handlePlayerDynamicItemsInteraction(dt, item);
+        }
+        this.handleDynamicStaticItemsInteraction(item);
+        if ( item.health <= 0 ) {
+          this.deaths.push(item);
+          items.splice(itemIndex, 1);
+          if ( !itemIndex ) {
+            setTimeout(() => {
+              this.stop();
+            }, 500)
+          } else {
+            this.score = this.score + 1;
+          }
         }
       }
     });
@@ -278,15 +286,17 @@ export class Game {
     this.dynamicItems
       .filter((item: ADynamicItem, index: number) => Boolean(index))
       .forEach((item: ADynamicItem) => {
-        const dx = Math.abs(player.position.x + player.size.width/2 - item.position.x - item.size.width/2);
-        const dy = Math.abs(player.position.y + player.size.height/2 - item.position.y - item.size.height/2);
-        const width: number = player.size.width/2 + item.size.width/2;
-        const height: number = player.size.height/2 + item.size.height/2;
-        if ( dx <= width && dy <= height ) {
-          player.health -= 100;
-          item.health -= 100;
-        } else {
-          item.strategy.apply(dt);
+        if ( item ) {
+          const dx = Math.abs(player.position.x + player.size.width/2 - item.position.x - item.size.width/2);
+          const dy = Math.abs(player.position.y + player.size.height/2 - item.position.y - item.size.height/2);
+          const width: number = player.size.width/2 + item.size.width/2;
+          const height: number = player.size.height/2 + item.size.height/2;
+          if ( dx <= width && dy <= height ) {
+            player.health -= 100;
+            item.health -= 100;
+          } else {
+            item.strategy.apply(dt);
+          }
         }
       })
   }
@@ -330,7 +340,7 @@ export class Game {
   }
 
   protected handleShots(dt: number) {
-    this.shots.forEach((shot: Shot, shotIndex: number, shots: Shot[]) => {
+    this.shots.forEach((shot: Shot) => {
       if ( shot ) {
         const { damage, speed, dynamicPosition, startPosition, endPosition, shooter } = shot;
         const dx = endPosition.x- startPosition.x;
@@ -338,13 +348,15 @@ export class Game {
         const c = Math.sqrt(dx**2 + dy**2);
         shot.dynamicPosition.x = dynamicPosition.x +  Math.round( speed *dt / 1000 * dx/c);
         shot.dynamicPosition.y = dynamicPosition.y +  Math.round(speed * dt / 1000  * dy/c );
-        this.dynamicItems.forEach((item: ADynamicItem, itemIndex: number, items: ADynamicItem[]) => {
-          if ( item && item !== shooter ) {
-            const diffX: number = dynamicPosition.x - (item.position.x + Math.round(item.size.width/2));
-            const diffY: number = dynamicPosition.y - (item.position.y + Math.round(item.size.height/2));
-            if ( Math.abs(diffX) <= item.size.width  && Math.abs(diffY) <= item.size.height) {
-              shot.isHit = true;
-              item.health -= damage;
+        this.dynamicItems.forEach((item: ADynamicItem) => {
+          if ( item ) {
+            if ( item && item !== shooter ) {
+              const diffX: number = dynamicPosition.x - (item.position.x + Math.round(item.size.width/2));
+              const diffY: number = dynamicPosition.y - (item.position.y + Math.round(item.size.height/2));
+              if ( Math.abs(diffX) <= item.size.width  && Math.abs(diffY) <= item.size.height) {
+                shot.isHit = true;
+                item.health -= damage;
+              }
             }
           }
         })
@@ -379,7 +391,7 @@ export class Game {
   }
 
   protected renderFlash(position: IPosition) {
-    this.ctx.fillStyle ='#dd0';
+    this.ctx.fillStyle = GAME_FLASH_COLOR;
     this.ctx.fillRect(
       position.x -20,
       position.y -20,
@@ -391,40 +403,48 @@ export class Game {
   protected renderDeaths() {
     while(this.deaths.length) {
       const item: ADynamicItem = this.deaths.shift();
-      this.ctx.fillStyle ='#dd0';
-      this.ctx.fillRect(
-        item.position.x -20,
-        item.position.y -20,
-        item.size.width + 40,
-        item.size.height + 40
-      );
+      if ( item ) {
+        this.ctx.fillStyle ='#dd0';
+        this.ctx.fillRect(
+          item.position.x -20,
+          item.position.y -20,
+          item.size.width + 40,
+          item.size.height + 40
+        );
+      }
     }
   }
 
   protected renderStaticItems() {
     const self = this;
-    this.staticItems.forEach((item: AStaticItem) => item.render(self.ctx))
+    this.staticItems.forEach((item: AStaticItem) => {
+      if ( item ) {
+        item.render(self.ctx)
+      }
+    })
   }
 
   protected renderShots() {
     const self = this;
     this.shots.forEach((shot: Shot, shotIndex: number, shots: Shot[]) => {
-      const { distance, dynamicPosition, endPosition, startPosition } = shot;
-      const dx: number = dynamicPosition.x - startPosition.x;
-      const dy: number = dynamicPosition.y - startPosition.y;
-      const length: number = Math.sqrt(dx**2 + dy**2);
-      if (shot.isHit || length >= distance ) {
-        shot.renderShotMotionEnd(self.ctx, shot.dynamicPosition);
-        shots.splice(shotIndex, 1);
-      } else {
-        shot.renderShotMotion({
-          dx,
-          dy,
-          startPosition,
-          ctx: self.ctx,
-          position: dynamicPosition,
-          endPosition: endPosition
-        });
+      if ( shot ) {
+        const { distance, dynamicPosition, endPosition, startPosition } = shot;
+        const dx: number = dynamicPosition.x - startPosition.x;
+        const dy: number = dynamicPosition.y - startPosition.y;
+        const length: number = Math.sqrt(dx**2 + dy**2);
+        if (shot.isHit || length >= distance ) {
+          shot.renderShotMotionEnd(self.ctx, shot.dynamicPosition);
+          shots.splice(shotIndex, 1);
+        } else {
+          shot.renderShotMotion({
+            dx,
+            dy,
+            startPosition,
+            ctx: self.ctx,
+            position: dynamicPosition,
+            endPosition: endPosition
+          });
+        }
       }
     })
   }

@@ -24,7 +24,8 @@ export class Strategy {
       target,
       context,
       kamikadzeMode,
-      healthLimitValue
+      healthLimitValue,
+      reactionDelay
     } = options;
     this.context = context;
     this.target = target;
@@ -33,6 +34,7 @@ export class Strategy {
     this.staticItems = staticItems;
     this.kamikadzeMode = kamikadzeMode;
     this.healthLimitValue = healthLimitValue;
+    this.reactionDelay = reactionDelay;
   }
 
   apply(dt: number) {
@@ -75,7 +77,7 @@ export class Strategy {
         const distanceToPlayer = Math.sqrt(dx ** 2 + dy ** 2);
         if ( distanceToPlayer <= distance ) {
           ShotFactory.shot(this.context, this.context.weapons[0], this.target.position);
-          if ( this.kamikadzeMode && dx && dy ) {
+          if ( this.kamikadzeMode ) {
             InputFactory.input(this.context, {
               x: dx > 0 ? 1 : dx === 0 ? 0 : -1,
               y: dy > 0 ? 1 : dy === 0 ? 0 : -1

@@ -12,36 +12,41 @@ export class ShotFactory {
   }
 
   static shot(shooter: ADynamicItem, weapon: AWeapon, endPosition: IPosition) {
-    for ( let i = 0; i < weapon.fireRate; i = i + 1 ) {
-      if ( weapon.isActive ) {
-        if ( weapon.ammoCount > 0 ) {
-          setTimeout(() => {
-            ShotFactory.shots.push(
-              new Shot({
-                shooter,
-                weapon,
-                endPosition: endPosition,
-                startPosition: {
-                  x: weapon.position.x,
-                  y: weapon.position.y
-                },
-                damage: weapon.damage,
-                distance: weapon.distance,
-                speed: weapon.speed,
-                renderShotMotion: weapon.renderShotMotion,
-                renderShotMotionEnd: weapon.renderShotMotionEnd
-              }));
-            weapon.ammoCount = weapon.ammoCount - 1;
-            if ( i=== weapon.fireRate -1 ) {
-              weapon.isActive = false;
-            }
-          }, i*GAME_DEFAULT_RATE_LIMIT );
+    if ( weapon.isActive ) {
+      if ( weapon.ammoCount > 0 ) {
+        for ( let i = 0; i < weapon.fireRate; i = i + 1 ) {
+          if ( weapon.isActive ) {
+            setTimeout(() => {
+              ShotFactory.shots.push(
+                new Shot({
+                  shooter,
+                  weapon,
+                  endPosition: endPosition,
+                  startPosition: {
+                    x: weapon.position.x,
+                    y: weapon.position.y
+                  },
+                  damage: weapon.damage,
+                  distance: weapon.distance,
+                  speed: weapon.speed,
+                  renderShotMotion: weapon.renderShotMotion,
+                  renderShotMotionEnd: weapon.renderShotMotionEnd
+                }));
+              weapon.ammoCount = weapon.ammoCount - 1;
+              if ( i === weapon.fireRate -1 ) {
+                weapon.isActive = false;
+              }
+            }, i*GAME_DEFAULT_RATE_LIMIT );
+          }
+
         }
-      } else {
-        setTimeout(() => {
-          weapon.isActive = true;
-        }, Math.round(weapon.reload))
       }
+    } else {
+      setTimeout(() => {
+        weapon.isActive = true;
+      }, Math.round(weapon.reload))
     }
+
+
   }
 }

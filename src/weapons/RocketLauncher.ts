@@ -20,8 +20,8 @@ export class RocketLauncher extends AWeapon {
 
   public renderShotMotion = (options: IRenderShotParams) => {
     const { ctx, position, dx, dy } = options;
-    const kx: number = dx === 0 ? 0 : dx > 0 ? 1 : -1;
-    const ky: number = dy === 0 ? 0 : dy > 0 ? 1 : -1;
+    const kx: number = Math.abs(dx) < 5 ? 0 : dx > 0 ? 1 : -1;
+    const ky: number = Math.abs(dy) < 5 ? 0 : dy > 0 ? 1 : -1;
     ctx.fillStyle = this.flashColor;
     ctx.fillRect(position.x - kx*3 , position.y - ky*3, 9, 9 );
     ctx.fillStyle = this.shotColor;

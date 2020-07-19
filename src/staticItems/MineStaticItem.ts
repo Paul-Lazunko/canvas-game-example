@@ -17,7 +17,7 @@ export class MineStaticItem extends AStaticItem {
 
   public render(ctx: any) {
     ctx.fillStyle = MINE_STATIC_ITEM_COLOR_FIRST;
-    ctx.fillRect(this.position.x, this.position.y, 9,9);
+    ctx.fillRect(this.position.x - 4, this.position.y - 4 , 9,9);
   }
 
 }

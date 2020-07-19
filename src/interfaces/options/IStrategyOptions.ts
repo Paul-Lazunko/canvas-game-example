@@ -8,5 +8,6 @@ export interface IStrategyOptions {
   inputs: Input[],
   staticItems: AStaticItem[],
   kamikadzeMode: boolean,
-  healthLimitValue: number
+  healthLimitValue: number,
+  reactionDelay: number
 }

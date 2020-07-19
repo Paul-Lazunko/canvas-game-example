@@ -20,8 +20,8 @@ export class Flamethrower extends AWeapon {
 
   public renderShotMotion = (options: IRenderShotParams) => {
     const { ctx, position, dx, dy } = options;
-    const kx: number = dx === 0 ? 0 : dx > 0 ? 1 : -1;
-    const ky: number = dy === 0 ? 0 : dy > 0 ? 1 : -1;
+    const kx: number = Math.abs(dx) < 5 ? 0 : dx > 0 ? 1 : -1;
+    const ky: number = Math.abs(dy) < 5 ? 0 : dy > 0 ? 1 : -1;
     ctx.fillStyle = '#ffe700';
     ctx.fillRect(position.x + 8*kx, position.y + 8*ky, 9,9);
     ctx.fillRect(position.x + 10*kx, position.y + 10*ky, 7,7);

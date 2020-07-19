@@ -8,10 +8,6 @@ export class PositionFactory {
   }
 
   protected static calculateValue(maxValue: number, threshold: number) {
-    let value: number = 0;
-    while ( value <= threshold || value >= maxValue - threshold ) {
-      value = Math.round(Math.random() * maxValue );
-    }
-    return value;
+    return Math.round(Math.random() * ( maxValue - threshold ));
   }
 }

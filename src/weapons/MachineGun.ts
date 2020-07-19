@@ -21,8 +21,8 @@ export class MachineGun extends AWeapon {
   public renderShotMotion = (options: IRenderShotParams) => {
     const { ctx, position } = options;
     ctx.fillStyle = this.shotColor;
-    ctx.fillRect(position.x, position.y, 1,1);
-  }
+    ctx.fillRect(position.x, position.y, 2,2);
+  };
 
   public renderShotMotionEnd = (ctx: any, position: IPosition) => {
     ctx.fillStyle = this.flashColor;
