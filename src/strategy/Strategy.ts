@@ -43,7 +43,10 @@ export class Strategy {
       this.reactionAccumulatorValue +=dt;
     } else {
       if ( this.context.health <= this.healthLimitValue ) {
-        const healthPosition = this.getNearestStaticItemPosition(EStaticItems.HEALTH);
+        const healthPosition = this.getNearestStaticItemPosition([
+          EStaticItems.HEALTH,
+          EStaticItems.LIFE
+        ]);
         if ( healthPosition) {
           const dpx = healthPosition.x - this.context.position.x;
           const dpy =  healthPosition.y - this.context.position.y;
@@ -54,7 +57,9 @@ export class Strategy {
         }
       }
       if ( !this.context.weapons[0].ammoCount ) {
-        const ammoPosition = this.getNearestStaticItemPosition(this.context.weapons[0].name as EStaticItems);
+        const ammoPosition = this.getNearestStaticItemPosition([
+          this.context.weapons[0].name as EStaticItems
+        ]);
         if ( ammoPosition) {
           const dax = ammoPosition.x - this.context.position.x;
           const day =  ammoPosition.y - this.context.position.y;
@@ -94,11 +99,11 @@ export class Strategy {
     }
   }
 
-  protected getNearestStaticItemPosition(type: EStaticItems): IPosition {
+  protected getNearestStaticItemPosition(types: EStaticItems[]): IPosition {
     let target: AStaticItem;
     let distanceToNearest: number;
     this.staticItems
-      .filter((item: AStaticItem) => item.type === type )
+      .filter((item: AStaticItem) => types.includes(item.type as EStaticItems) )
       .forEach((item: AStaticItem, index, items: AStaticItem[]) => {
         const dx = item.position.x - this.context.position.x;
         const dy = item.position.y - this.context.position.y;
