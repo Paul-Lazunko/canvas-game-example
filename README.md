@@ -7,7 +7,10 @@ const game: Game = new Game({
   fps: 50,
   addEnemyThresholdMs: 5000,
   addStaticItemThresholdMs: 1000,
-  playerHealth: 500
+  playerHealth: 500,
+  gameOverHandler: () => {
+    // Handle game over
+  }
 });
 const canvas = document.getElementById('canvasId');
 game.init(canvas).start();
@@ -20,6 +23,6 @@ left click - fire
 
 Q - switch weapon
 
-T - teleport to mouse position
+T - teleportation to mouse position
 
 Play and enjoy ;)
