@@ -248,11 +248,11 @@ export class Game {
       if ( target ) {
         const newPositionX: number = target.position.x + Math.round(position.x * target.speed );
         const newPositionY: number =target.position.y + Math.round(position.y * target.speed );
-        if ( position.x && ( newPositionX > 0 ) && newPositionX <= this.area.width ) {
+        if ( position.x && ( newPositionX > 0 ) && newPositionX <= Math.round(this.area.width - target.size.width/2) ) {
           target.position.x = target.position.x + Math.round(position.x * target.speed );
           target.orientation = EOrientation.HORIZONTAL
         }
-        if ( position.y && ( newPositionY > 0 ) && newPositionY <= this.area.height ) {
+        if ( position.y && ( newPositionY > 0 ) && newPositionY <=  Math.round(this.area.height - target.size.height/2) ) {
           target.position.y = target.position.y + Math.round(position.y * target.speed );
           target.orientation = EOrientation.VERTICAL
         }
