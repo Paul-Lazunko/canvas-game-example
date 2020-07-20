@@ -50,6 +50,8 @@ export class Game {
   public shots: Shot[];
   protected deaths: ADynamicItem[];
 
+  protected gameOverHandler: (...args: any[]) => void;
+
   constructor(options: IGameOptions) {
     const {
       fps,
@@ -58,6 +60,7 @@ export class Game {
       dynamicItemsMaxCount,
       staticItemsMaxCount,
       playerHealth,
+      gameOverHandler
     } = options;
     this.score = 0;
     this.rateLimit = fps ? Math.round(1000/fps) : GAME_DEFAULT_RATE_LIMIT;
@@ -75,7 +78,8 @@ export class Game {
     this.area = {
       width: 0,
       height: 0
-    }
+    };
+    this.gameOverHandler = gameOverHandler
   }
 
   public get player() {
@@ -183,6 +187,9 @@ export class Game {
     this.dynamicItems = [];
     this.staticItems = [];
     this.ctx.clearRect(0,0,this.area.width,this.area.height);
+    if ( this.gameOverHandler ) {
+      this.gameOverHandler();
+    }
   }
 
   public update(dt: number) {

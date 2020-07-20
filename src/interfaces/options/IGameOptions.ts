@@ -4,6 +4,7 @@ export interface IGameOptions {
   fps?: number;
   addEnemyThresholdMs?: number;
   addStaticItemThresholdMs?: number;
-  playerHealth?: number
+  playerHealth?: number,
+  gameOverHandler: (...args: any[]) => void
 
 }
