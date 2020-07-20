@@ -6,5 +6,4 @@ export interface IGameOptions {
   addStaticItemThresholdMs?: number;
   playerHealth?: number,
   gameOverHandler: (...args: any[]) => void
-
 }

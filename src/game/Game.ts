@@ -50,7 +50,7 @@ export class Game {
   public shots: Shot[];
   protected deaths: ADynamicItem[];
 
-  protected gameOverHandler: (...args: any[]) => void;
+  protected gameOverHandler: any;
 
   constructor(options: IGameOptions) {
     const {
@@ -187,7 +187,7 @@ export class Game {
     this.dynamicItems = [];
     this.staticItems = [];
     this.ctx.clearRect(0,0,this.area.width,this.area.height);
-    if ( this.gameOverHandler ) {
+    if ( typeof this.gameOverHandler === 'function' ) {
       this.gameOverHandler();
     }
   }
