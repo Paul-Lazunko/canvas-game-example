@@ -28,7 +28,7 @@ export const WEAPON_FLAMETHROWER_FLASH_COLOR: string = '#ffc200';
 export const WEAPON_FLAMETHROWER_AMMO_COLOR_FIRST: string = '#ff0c07';
 
 
-export const WEAPON_ROCKET_LAUNCHER_COLOR: string = '#36431b';
+export const WEAPON_ROCKET_LAUNCHER_COLOR: string = '#687f32';
 export const WEAPON_ROCKET_LAUNCHER_FLASH_COLOR: string = '#ffc200';
 
 export const WEAPON__ROCKET_LAUNCHER_AMMO_COLOR_FIRST: string = '#36431b';
