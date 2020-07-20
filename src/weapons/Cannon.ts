@@ -5,13 +5,13 @@ import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 export class Cannon extends AWeapon {
 
   public name: string = EWeapon.CANNON;
-  public distance: number = 500;
+  public distance: number = 600;
   public damage: number = 20;
   public damageSize: ISize = {
     width: 9,
     height: 9
   };
-  public speed: number = 500;
+  public speed: number = 400;
   public fireRate: number = 1;
   public reload: number = 500;
   public shotColor: string = WEAPON_CANNON_SHOT_COLOR;

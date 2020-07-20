@@ -5,7 +5,7 @@ import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 export class Flamethrower extends AWeapon {
 
   public name: string = EWeapon.FLAMETHROWER;
-  public distance: number = 36;
+  public distance: number = 50;
   public damage: number = 100;
   public damageSize: ISize = {
     width: 25,
@@ -20,8 +20,8 @@ export class Flamethrower extends AWeapon {
 
   public renderShotMotion = (options: IRenderShotParams) => {
     const { ctx, position, dx, dy } = options;
-    const kx: number = Math.abs(dx) < 5 ? 0 : dx > 0 ? 1 : -1;
-    const ky: number = Math.abs(dy) < 5 ? 0 : dy > 0 ? 1 : -1;
+    const kx: number = Math.abs(dx) < 8 ? 0 : dx > 0 ? 1 : -1;
+    const ky: number = Math.abs(dy) < 8 ? 0 : dy > 0 ? 1 : -1;
     ctx.fillStyle = '#ffe700';
     ctx.fillRect(position.x + 8*kx, position.y + 8*ky, 9,9);
     ctx.fillRect(position.x + 10*kx, position.y + 10*ky, 7,7);

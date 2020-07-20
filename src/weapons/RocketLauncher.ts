@@ -23,7 +23,7 @@ export class RocketLauncher extends AWeapon {
     const kx: number = Math.abs(dx) < 5 ? 0 : dx > 0 ? 1 : -1;
     const ky: number = Math.abs(dy) < 5 ? 0 : dy > 0 ? 1 : -1;
     ctx.fillStyle = this.flashColor;
-    ctx.fillRect(position.x - kx*3 , position.y - ky*3, 9, 9 );
+    ctx.fillRect(position.x - 3 , position.y - 3, 9, 9 );
     ctx.fillStyle = this.shotColor;
     ctx.fillRect(position.x + kx*3 , position.y + ky*3, 3, 3 );
     ctx.fillRect(position.x + kx*6 , position.y + ky*6, 3, 3 );

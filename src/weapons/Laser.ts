@@ -5,13 +5,13 @@ import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 export class Laser extends AWeapon {
 
   public name: string = 'laser';
-  public distance: number = 600;
+  public distance: number = 300;
   public damage: number = 100;
   public damageSize: ISize = {
     width: 5,
     height: 5
   };
-  public speed: number = 1000;
+  public speed: number = 1200;
   public fireRate: number = 1;
   public reload: number = 2000;
   public shotColor: string = WEAPON_LASER_SHOT_COLOR;
@@ -23,7 +23,7 @@ export class Laser extends AWeapon {
     ctx.strokeStyle = this.shotColor;
     ctx.strokeWidth = '3px';
     ctx.beginPath();
-    ctx.moveTo(endPosition.x, endPosition.y);
+    ctx.moveTo(position.x, position.y);
     ctx.lineTo(startPosition.x, startPosition.y);
     ctx.stroke();
     ctx.closePath();
