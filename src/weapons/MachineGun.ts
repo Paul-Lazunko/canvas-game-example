@@ -8,8 +8,8 @@ export class MachineGun extends AWeapon {
   public distance: number = 450;
   public damage: number = 2;
   public damageSize: ISize = {
-    width: 3,
-    height: 3
+    width: 2,
+    height: 2
   };
   public speed: number = 700;
   public fireRate: number = 10;

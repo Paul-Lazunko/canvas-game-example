@@ -8,8 +8,8 @@ export class Flamethrower extends AWeapon {
   public distance: number = 50;
   public damage: number = 100;
   public damageSize: ISize = {
-    width: 25,
-    height: 25
+    width: 9,
+    height: 9
   };
   public speed: number = 200;
   public fireRate: number = 1;

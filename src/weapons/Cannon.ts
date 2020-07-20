@@ -8,8 +8,8 @@ export class Cannon extends AWeapon {
   public distance: number = 600;
   public damage: number = 20;
   public damageSize: ISize = {
-    width: 9,
-    height: 9
+    width: 5,
+    height: 5
   };
   public speed: number = 400;
   public fireRate: number = 1;

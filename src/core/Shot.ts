@@ -1,9 +1,10 @@
 import { ADynamicItem, AWeapon } from '../abstract';
-import { IPosition, IRenderShot, IRenderShotParams, IShotOptions } from '../interfaces';
+import { IPosition, IRenderShot, IRenderShotParams, IShotOptions, ISize } from '../interfaces';
 
 export class Shot implements IRenderShot{
 
   public shooter: ADynamicItem;
+  public weapon: AWeapon;
 
   public startPosition: IPosition;
   public endPosition: IPosition;
@@ -28,6 +29,7 @@ export class Shot implements IRenderShot{
       renderShotMotionEnd
     } = options;
     this.shooter = shooter;
+    this.weapon = weapon;
     this.startPosition = Object.assign({}, startPosition);
     this.dynamicPosition = startPosition;
     this.endPosition = endPosition;

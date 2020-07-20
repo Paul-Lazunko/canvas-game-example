@@ -8,8 +8,8 @@ export class RocketLauncher extends AWeapon {
   public distance: number = 600;
   public damage: number = 100;
   public damageSize: ISize = {
-    width: 49,
-    height: 49
+    width: 6,
+    height: 6
   };
   public speed: number = 200;
   public fireRate: number = 1;

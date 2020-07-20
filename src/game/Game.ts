@@ -349,7 +349,7 @@ export class Game {
   protected handleShots(dt: number) {
     this.shots.forEach((shot: Shot) => {
       if ( shot ) {
-        const { damage, speed, dynamicPosition, startPosition, endPosition, shooter } = shot;
+        const { damage, weapon,speed, dynamicPosition, startPosition, endPosition, shooter } = shot;
         const dx = endPosition.x- startPosition.x;
         const dy = endPosition.y - startPosition.y;
         const c = Math.sqrt(dx**2 + dy**2);
@@ -360,7 +360,10 @@ export class Game {
             if ( item && item !== shooter ) {
               const diffX: number = dynamicPosition.x - (item.position.x + Math.round(item.size.width/2));
               const diffY: number = dynamicPosition.y - (item.position.y + Math.round(item.size.height/2));
-              if ( Math.abs(diffX) <= item.size.width  && Math.abs(diffY) <= item.size.height) {
+              if (
+                Math.abs(diffX) <= item.size.width + Math.round(weapon.damageSize.width/2)
+                && Math.abs(diffY) <= item.size.height + Math.round(weapon.damageSize.height/2)
+              ) {
                 shot.isHit = true;
                 item.health -= damage;
               }
