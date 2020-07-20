@@ -17,22 +17,24 @@ export class ShotFactory {
         for ( let i = 0; i < weapon.fireRate; i = i + 1 ) {
           if ( weapon.isActive ) {
             setTimeout(() => {
-              ShotFactory.shots.push(
-                new Shot({
-                  shooter,
-                  weapon,
-                  endPosition: endPosition,
-                  startPosition: {
-                    x: weapon.position.x,
-                    y: weapon.position.y
-                  },
-                  damage: weapon.damage,
-                  distance: weapon.distance,
-                  speed: weapon.speed,
-                  renderShotMotion: weapon.renderShotMotion,
-                  renderShotMotionEnd: weapon.renderShotMotionEnd
-                }));
-              weapon.ammoCount = weapon.ammoCount - 1;
+              if ( weapon.ammoCount > 0 ) {
+                ShotFactory.shots.push(
+                  new Shot({
+                    shooter,
+                    weapon,
+                    endPosition: endPosition,
+                    startPosition: {
+                      x: weapon.position.x,
+                      y: weapon.position.y
+                    },
+                    damage: weapon.damage,
+                    distance: weapon.distance,
+                    speed: weapon.speed,
+                    renderShotMotion: weapon.renderShotMotion,
+                    renderShotMotionEnd: weapon.renderShotMotionEnd
+                  }));
+                weapon.ammoCount = weapon.ammoCount - 1;
+              }
               if ( i === weapon.fireRate -1 ) {
                 weapon.isActive = false;
               }
