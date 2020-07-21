@@ -131,7 +131,7 @@ export class Game {
             break;
           case 'q':
           case 'Q':
-            self.switchPlayerWeapon();
+            self.switchPlayerWeapon(1);
             break;
           case 't':
           case 'T':
@@ -170,7 +170,8 @@ export class Game {
     window.onwheel = (e: any) => {
       if ( self.isRan ) {
         e.preventDefault();
-        this.switchPlayerWeapon();
+        const delta: number = Math.sign(e.deltaY);
+        this.switchPlayerWeapon(delta);
       }
     };
     this.gameTime = Date.now();
@@ -179,8 +180,12 @@ export class Game {
     return this;
   }
 
-  protected switchPlayerWeapon(){
-    this.dynamicItems[0].weapons.push(this.dynamicItems[0].weapons.shift())
+  public switchPlayerWeapon(delta: number){
+    if ( delta > 0 ) {
+      this.dynamicItems[0].weapons.push(this.dynamicItems[0].weapons.shift())
+    } else {
+      this.dynamicItems[0].weapons.unshift(this.dynamicItems[0].weapons.pop())
+    }
   }
 
   public addPlayer() {
