@@ -11,7 +11,7 @@ export class RocketLauncher extends AWeapon {
     width: 6,
     height: 6
   };
-  public speed: number = 200;
+  public speed: number = 300;
   public fireRate: number = 1;
   public reload: number = 1500;
   public shotColor: string = WEAPON_ROCKET_LAUNCHER_COLOR;

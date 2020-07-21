@@ -5,13 +5,13 @@ import { IPosition, IRenderShotParams, ISize } from '../interfaces';
 export class Flamethrower extends AWeapon {
 
   public name: string = EWeapon.FLAMETHROWER;
-  public distance: number = 50;
+  public distance: number = 100;
   public damage: number = 100;
   public damageSize: ISize = {
     width: 9,
     height: 9
   };
-  public speed: number = 200;
+  public speed: number = 300;
   public fireRate: number = 1;
   public reload: number = 1000;
   public shotColor: string = WEAPON_FLAMETHROWER_SHOT_COLOR;

@@ -11,7 +11,7 @@ export class Cannon extends AWeapon {
     width: 5,
     height: 5
   };
-  public speed: number = 400;
+  public speed: number = 600;
   public fireRate: number = 1;
   public reload: number = 500;
   public shotColor: string = WEAPON_CANNON_SHOT_COLOR;

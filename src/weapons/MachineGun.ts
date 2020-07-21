@@ -11,7 +11,7 @@ export class MachineGun extends AWeapon {
     width: 2,
     height: 2
   };
-  public speed: number = 700;
+  public speed: number = 900;
   public fireRate: number = 10;
   public reload: number = 100;
   public shotColor: string = WEAPON_MACHINE_GUN_SHOT_COLOR;

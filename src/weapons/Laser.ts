@@ -11,7 +11,7 @@ export class Laser extends AWeapon {
     width: 3,
     height: 3
   };
-  public speed: number = 900;
+  public speed: number = 1200;
   public fireRate: number = 1;
   public reload: number = 2000;
   public shotColor: string = WEAPON_LASER_SHOT_COLOR;
