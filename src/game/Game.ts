@@ -375,7 +375,7 @@ export class Game {
               target.health = target.health  - item.value;
               setTimeout(() => {
                 self.renderFlash(item.position);
-              }, Math.round(self.rateLimit * 1.5))
+              }, Math.round(self.rateLimit * 1.735))
               break;
             default:
               target.weapons
