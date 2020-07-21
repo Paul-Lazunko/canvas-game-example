@@ -37,6 +37,9 @@ export class ShotFactory {
               }
               if ( i === weapon.fireRate -1 ) {
                 weapon.isActive = false;
+                setTimeout(() => {
+                  weapon.isActive = true;
+                }, Math.round(weapon.reload))
               }
             }, i*GAME_DEFAULT_RATE_LIMIT );
           }

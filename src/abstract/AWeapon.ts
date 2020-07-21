@@ -19,10 +19,6 @@ export abstract class AWeapon {
   public ammoCount: number;
   public position: IPosition;
 
-  public get _isActive() {
-    return this.isActive;
-  }
-
   public render(ctx: any, shooter: ADynamicItem, mousePosition: IPosition) {
     ctx.fillStyle = this.color;
 
