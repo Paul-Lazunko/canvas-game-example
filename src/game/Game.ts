@@ -143,6 +143,29 @@ export class Game {
         }
       }
     };
+    canvas.ontouchmove = (e: any) => {
+      e.preventDefault();
+      const touches: any[] = e.changedTouches;
+      const touch = touches && touches[0];
+      if ( touch ) {
+        const  { top, left } = canvas.getBoundingClientRect();
+          const { pageX, pageY, radiusX, radiusY } = touch;
+          const offsetX: number = pageX - left;
+          const offsetY: number = pageY - top;
+         this.dynamicItems.forEach((item: ADynamicItem, index: number) => {
+            const x: boolean = Math.abs(offsetX - item.position.x) <= Math.round(item.size.width/2 + radiusX/2);
+            const y: boolean = Math.abs(offsetY - item.position.y) <= Math.round(item.size.height/2 + radiusY/2);
+            if ( !index ) {
+              const dx: number = offsetX - self.player.position.x === 0 ? 0 : offsetX - self.player.position.x > 0 ? 1 : -1;
+              const dy: number = offsetY - self.player.position.y === 0 ? 0 : offsetY - self.player.position.y > 0 ? 1 : -1;
+              InputFactory.input(self.dynamicItems[0], { x: dx, y: dy });
+            } else  if ( x && y ) {
+                ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], { x: offsetX, y: offsetY });
+              }
+          });
+      }
+    };
+
     this.gameTime = Date.now();
     this.addPlayer();
     this.isRan = true;
