@@ -1,6 +1,6 @@
 {
   "name": "canvas-game-example-the-tanks",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Canvas the Tanks Game Example",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
