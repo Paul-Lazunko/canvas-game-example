@@ -240,7 +240,7 @@ export class Game {
         inputs: this.inputs,
         staticItems: this.staticItems,
         kamikadzeMode: Boolean(Math.round(Math.random())),
-        healthLimitValue: 30,
+        healthLimitValue: Math.round(Math.random()*100),
         reactionDelay: GAME_DEFAULT_STRATEGY_REACTION_DELAY
       });
       this.dynamicItems.push(item);
