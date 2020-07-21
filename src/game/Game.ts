@@ -131,7 +131,7 @@ export class Game {
             break;
           case 'q':
           case 'Q':
-            self.dynamicItems[0].weapons.push(self.dynamicItems[0].weapons.shift());
+            self.switchPlayerWeapon();
             break;
           case 't':
           case 'T':
@@ -144,15 +144,16 @@ export class Game {
       }
     };
     canvas.ontouchmove = (e: any) => {
-      e.preventDefault();
-      const touches: any[] = e.changedTouches;
-      const touch = touches && touches[0];
-      if ( touch ) {
-        const  { top, left } = canvas.getBoundingClientRect();
+      if ( self.isRan ) {
+        e.preventDefault();
+        const touches: any[] = e.changedTouches;
+        const touch = touches && touches[0];
+        if ( touch ) {
+          const  { top, left } = canvas.getBoundingClientRect();
           const { pageX, pageY, radiusX, radiusY } = touch;
           const offsetX: number = pageX - left;
           const offsetY: number = pageY - top;
-         this.dynamicItems.forEach((item: ADynamicItem, index: number) => {
+          this.dynamicItems.forEach((item: ADynamicItem, index: number) => {
             const x: boolean = Math.abs(offsetX - item.position.x) <= Math.round(item.size.width/2 + radiusX/2);
             const y: boolean = Math.abs(offsetY - item.position.y) <= Math.round(item.size.height/2 + radiusY/2);
             if ( !index ) {
@@ -160,16 +161,26 @@ export class Game {
               const dy: number = offsetY - self.player.position.y === 0 ? 0 : offsetY - self.player.position.y > 0 ? 1 : -1;
               InputFactory.input(self.dynamicItems[0], { x: dx, y: dy });
             } else  if ( x && y ) {
-                ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], { x: offsetX, y: offsetY });
-              }
+              ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], { x: offsetX, y: offsetY });
+            }
           });
+        }
       }
     };
-
+    window.onwheel = (e: any) => {
+      if ( self.isRan ) {
+        e.preventDefault();
+        this.switchPlayerWeapon();
+      }
+    };
     this.gameTime = Date.now();
     this.addPlayer();
     this.isRan = true;
     return this;
+  }
+
+  protected switchPlayerWeapon(){
+    this.dynamicItems[0].weapons.push(this.dynamicItems[0].weapons.shift())
   }
 
   public addPlayer() {
