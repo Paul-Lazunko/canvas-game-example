@@ -114,21 +114,27 @@ export class Game {
         e.preventDefault()
         switch(e.key) {
           case 'w':
+          case 'W':
             InputFactory.input(self.dynamicItems[0], { y: -1 });
             break;
           case 's':
+          case 'S':
             InputFactory.input(self.dynamicItems[0], { y: 1 });
             break;
           case 'd':
+          case 'D':
             InputFactory.input(self.dynamicItems[0], { x: 1 });
             break;
           case 'a':
+          case 'A':
             InputFactory.input(self.dynamicItems[0], { x: -1 });
             break;
           case 'q':
+          case 'Q':
             self.dynamicItems[0].weapons.push(self.dynamicItems[0].weapons.shift());
             break;
           case 't':
+          case 'T':
             self.dynamicItems[0].position = {
               x: self.mousePosition.x,
               y: self.mousePosition.y,
