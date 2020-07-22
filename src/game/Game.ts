@@ -28,6 +28,7 @@ export class Game {
   protected gameTime: number;
   protected area: ISize;
   public isRan: boolean;
+  protected keyPressor: Partial<IPosition>;
 
   protected mousePosition: IPosition = {
     x: 0,
@@ -109,25 +110,31 @@ export class Game {
         ShotFactory.shot(self.dynamicItems[0], self.dynamicItems[0].weapons[0], self.mousePosition);
       }
     };
+    self.keyPressor = { x: 0, y: 0 };
     window.onkeypress = function(e: any) {
       if ( self.isRan ) {
-        e.preventDefault()
+        e.preventDefault();
+        let isKeyPressed: boolean = false;
         switch(e.key) {
           case 'w':
           case 'W':
-            InputFactory.input(self.dynamicItems[0], { y: -1 });
+            self.keyPressor.y = -1;
+            isKeyPressed = true;
             break;
           case 's':
           case 'S':
-            InputFactory.input(self.dynamicItems[0], { y: 1 });
+            self.keyPressor.y = 1;
+            isKeyPressed = true;
             break;
           case 'd':
           case 'D':
-            InputFactory.input(self.dynamicItems[0], { x: 1 });
+            self.keyPressor.x = 1;
+            isKeyPressed = true;
             break;
           case 'a':
           case 'A':
-            InputFactory.input(self.dynamicItems[0], { x: -1 });
+            self.keyPressor.x = -1;
+            isKeyPressed = true;
             break;
           case 'q':
           case 'Q':
@@ -139,6 +146,29 @@ export class Game {
               x: self.mousePosition.x,
               y: self.mousePosition.y,
             };
+            break;
+        }
+        if ( isKeyPressed ) {
+          InputFactory.input(self.dynamicItems[0], self.keyPressor);
+        }
+      }
+    };
+    window.onkeyup = function (e) {
+      if (self.isRan) {
+        e.preventDefault();
+        self.keyPressor = self.keyPressor || { x: 0, y: 0 };
+        switch (e.key) {
+          case 'w':
+          case 'W':
+          case 's':
+          case 'S':
+            self.keyPressor.y = 0;
+            break;
+          case 'd':
+          case 'D':
+          case 'a':
+          case 'A':
+            self.keyPressor.x = 0;
             break;
         }
       }
