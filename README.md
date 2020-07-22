@@ -15,14 +15,17 @@ const game: Game = new Game({
 const canvas = document.getElementById('canvasId');
 game.init(canvas).start();
 
+// You have access to player health and weapon like: 
+// game.player.health, game.player.weapons
+
 ```
 
 WSDA - move
 
 left click - fire
 
-Q - switch weapon
+Q (scroll) - switch weapon
 
 T - teleportation to mouse position
 
-Play and enjoy ;)
+See example at https://paul-lazunko.github.io/
